@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const path = require("node:path");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -26,6 +27,7 @@ const authenticate = createAuthMiddleware({
 
 app.use(cors());
 app.use(express.json());
+app.use("/web", express.static(path.join(__dirname, "../dist")));
 
 app.get("/", (req, res) => {
   res.send("API funcionando");
