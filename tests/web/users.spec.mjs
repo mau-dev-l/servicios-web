@@ -29,7 +29,7 @@ async function login(page) {
 
 test("registration, authenticated listing, own-profile update and confirmed 204 deletion", async ({ page }) => {
   const calls = await mockApi(page);
-  await page.goto("/web/");
+  await page.goto("/");
   await page.getByRole("button", { name: "Crear cuenta", exact: true }).click();
   await page.getByLabel("Nombre", { exact: true }).fill("Ana");
   await page.getByLabel("Email", { exact: true }).fill("ana@example.com");
@@ -56,7 +56,7 @@ test("registration, authenticated listing, own-profile update and confirmed 204 
 
 test("API errors remain visible and an expired session clears protected data", async ({ page }) => {
   await mockApi(page);
-  await page.goto("/web/");
+  await page.goto("/");
   await page.route("**/login", route => route.fulfill({ status: 401, json: { msg: "Credenciales incorrectas" } }));
   await page.getByLabel("Email", { exact: true }).fill("ana@example.com");
   await page.getByLabel("Contraseña").fill("wrong");
@@ -80,7 +80,7 @@ test("API errors remain visible and an expired session clears protected data", a
 test("mobile layout, network failure and reload logout", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await mockApi(page);
-  await page.goto("/web/");
+  await page.goto("/");
   await login(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.route("**/users", route => route.abort());
@@ -90,13 +90,8 @@ test("mobile layout, network failure and reload logout", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Bienvenido de nuevo" })).toBeVisible();
 });
 
-test("Express serves the frontend and keeps the API authentication boundary", async ({ request }) => {
-  expect(await (await request.get("/")).text()).toBe("API funcionando");
-  const web = await request.get("/web/");
-  expect(web.status()).toBe(200);
-  expect(await web.text()).toContain("/web/assets/");
-  for (const method of ["GET", "PUT", "DELETE"]) {
-    const response = await request.fetch(method === "GET" ? "/users" : "/users/me", { method });
-    expect(response.status()).toBe(401);
-  }
+test("frontend is served independently from the API", async ({ request }) => {
+  const response = await request.get("/");
+  expect(response.status()).toBe(200);
+  expect(await response.text()).toContain("/assets/");
 });

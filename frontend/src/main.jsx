@@ -2,6 +2,8 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
+const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "";
+
 function Method({ children }) {
   return <span className={`method ${children.toLowerCase()}`}>{children}</span>;
 }
@@ -28,7 +30,7 @@ function App() {
   async function request(path, method = "GET", body, token = session?.token) {
     let response;
     try {
-      response = await fetch(path, {
+      response = await fetch(`${API_URL}${path}`, {
         method,
         headers: {
           ...(body ? { "Content-Type": "application/json" } : {}),
