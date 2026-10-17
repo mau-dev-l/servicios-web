@@ -1,0 +1,193 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "45128a09-57b8-49a6-97a1-ce104daff4a6",
+      "name": "Telegram Trigger",
+      "webhookId": "5da55042-2b22-4bc2-a44d-aeadb688d59e",
+      "credentials": {
+        "telegramApi": {
+          "id": "dHDySONknCpul9OW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:3000/login",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"email\": \"mauriciolara@gmail.com\",\n  \"password\": \"123\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "bc23a808-1acd-40af-80fb-634d2c8a5cf3",
+      "name": "login",
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "uhuw4XL4fczO6Em7",
+          "name": "Custom Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://api:3000/users",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $node[\"login\"].json.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "24c26db5-fbff-4934-9d7e-6d89ef5bcd08",
+      "name": "Get/users"
+    },
+    {
+      "parameters": {
+        "chatId": "2122452958",
+        "text": "={{ $items(\"Get/users\").map(item => `${item.json.nombre} — ${item.json.email}`).join('\\n') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "90ab2d13-b51f-4de4-8961-9de6ed989e84",
+      "name": "Send a text message",
+      "webhookId": "42ec8222-356d-40c1-886c-4bfc0e20cf5f",
+      "credentials": {
+        "telegramApi": {
+          "id": "dHDySONknCpul9OW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fc73aea1-4fe8-4fbd-9214-47c62b0e0adb",
+              "leftValue": "={{ $json.message.text === 'users' || $json.message.text === '/users' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "205713be-c71c-453a-8456-596dc727b379",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "login": {
+      "main": [
+        [
+          {
+            "node": "Get/users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get/users": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e970aa10-ea73-4e5c-82d9-c70fa69d06a6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dbd91d06720880b2e04267e44bc5bbd69ab831266f69b0a70ee36b3a770ce90e"
+  },
+  "nodeGroups": [],
+  "id": "kAm73Do80AfZzisB",
+  "tags": []
+}
