@@ -31,7 +31,7 @@ class UserService {
     }
 
     return this.jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, rol: user.rol },
       this.jwtSecret,
       { expiresIn: "1h" }
     );

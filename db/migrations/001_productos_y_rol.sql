@@ -1,0 +1,18 @@
+-- Migracion para una base demo_db ya existente.
+-- Ejecutar una sola vez:
+--   mysql ... < db/migrations/001_productos_y_rol.sql
+
+ALTER TABLE usuarios
+  ADD COLUMN rol ENUM('user', 'admin') NOT NULL DEFAULT 'user';
+
+CREATE TABLE IF NOT EXISTS productos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(150) NOT NULL,
+  precio DECIMAL(10, 2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0,
+  embedding JSON NULL,
+  embedding_model VARCHAR(50) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_productos_nombre (nombre)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

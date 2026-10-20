@@ -1,23 +1,32 @@
 {
+  "packageManager": "pnpm@10.34.7",
   "scripts": {
     "test:web": "playwright test",
     "start": "node server.js",
     "start:backend": "node server.js"
   },
   "dependencies": {
+    "@langchain/core": "^1.2.18",
+    "@langchain/ollama": "^1.3.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "init": "^0.1.2",
     "jsonwebtoken": "^9.0.3",
+    "langchain": "^1.5.18",
     "mysql2": "^3.24.2",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "telegraf": "^4.16.3",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@vitejs/plugin-react": "^6.1.1",
-    "vite": "^8.3.0"
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.1",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.5"
   }
 }
